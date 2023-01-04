@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import { config } from "../config/config";
 import { Client } from "../db/models/Client";
 
+mongoose.set("strictQuery", true);
+
 export class ClientController {
   async create(req: express.Request, res: express.Response) {
     const { name, email, phone, address, cpf } = req.body;
