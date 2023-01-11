@@ -7,19 +7,10 @@ export class CatController {
     try {
       const response = await fetch(`https://http.cat/${code}`);
 
-      res.status(200).json({ cat: response.url });
+      return res.status(200).json({ cat: response.url });
     } catch (error) {
       console.log(error);
+      return res.status(500).json({ message: `Internal server error: ${error}` });
     }
-
-    // try {
-    //   const response = await fetch(`https://http.cat/${code}`);
-
-    //   const responseData = await response.json();
-
-    //   return res.status(200).json(responseData);
-    // } catch (error) {
-    //   return error;
-    // }
   }
 }

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 import { config } from "../config/config";
 import { Client } from "../db/models/Client";
+import { isCPFValid } from "../middleware/cpfMiddleware";
 
 mongoose.set("strictQuery", true);
 
@@ -18,18 +19,15 @@ export class ClientController {
       return res.status(409).json({ message: `O CPF: ${clientExists.cpf} já está cadastrado.` });
     }
 
-    function isValidCPF(cpf: string) {
-      if (typeof cpf !== "string") return false;
-
-      cpf = cpf.replace(/[^\d]+/g, "");
-
-      if (cpf.length !== 11 || !!cpf.match(/(\d)\1{10}/)) return false;
-
-      return true;
+    if (!isCPFValid(cpf)) {
+      console.log();
+      return res.status(409).json({ message: "O CPF informado não é válido." });
     }
 
-    if (!isValidCPF(cpf)) {
-      return res.status(409).json({ message: "O CPF informado não é válido." });
+    const isEmailValid = email.includes("@");
+
+    if (!isEmailValid) {
+      return res.status(409).json({ message: "O email informado não é válido." });
     }
 
     try {
@@ -46,26 +44,6 @@ export class ClientController {
       return res
         .status(201)
         .json({ message: `Novo cliente adicionado com sucesso!`, cliente: client });
-    } catch (error) {
-      return res.status(500).json({ message: `Internal server error: ${error}` });
-    }
-  }
-
-  async find(req: express.Request, res: express.Response) {
-    const { id } = req.params;
-
-    try {
-      await mongoose.connect(config.mongo.url, { retryWrites: true, w: "majority" });
-
-      const client = await Client.findById(id);
-
-      if (!client) {
-        return res
-          .status(200)
-          .json({ message: "Não foi possível encontrar o cadastro do cliente." });
-      }
-
-      return res.status(200).json(client);
     } catch (error) {
       return res.status(500).json({ message: `Internal server error: ${error}` });
     }

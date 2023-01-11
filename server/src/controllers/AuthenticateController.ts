@@ -9,16 +9,22 @@ export class AuthenticateController {
     const { username, password, rememberMe } = req.body;
 
     if (username !== LoginUser.username || password !== LoginUser.password) {
-      return res.status(403).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid username or password" });
     }
+
+    const loginToken = jwt.sign({ username, password }, config.jwt.secret || "", {
+      expiresIn: "1h",
+    });
 
     if (rememberMe) {
-      const token = jwt.sign({ username, password }, config.jwt.secret || "", { expiresIn: "24h" });
+      const rememberToken = jwt.sign({ username, password }, config.jwt.secret || "", {
+        expiresIn: "24h",
+      });
 
-      return res.json({ message: "User successfully logged!", token });
+      return res.json({ message: "User successfully logged!", rememberToken, loginToken });
     }
 
-    return res.json({ message: "User successfully logged!" });
+    return res.json({ message: "User successfully logged!", loginToken });
   }
 
   async getProfile(req: express.Request, res: express.Response) {

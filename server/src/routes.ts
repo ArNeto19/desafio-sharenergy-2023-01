@@ -23,7 +23,6 @@ routes.get("/cat/:code", catController.getCat);
 routes.get("/dog", dogController.getDog);
 
 routes.get("/client", clientController.findAll);
-routes.get("/client/:id", clientController.find);
 routes.post("/client", clientController.create);
 routes.put("/client/:id", clientController.update);
 routes.delete("/client/:id", clientController.delete);
